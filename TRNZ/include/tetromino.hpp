@@ -7,33 +7,33 @@
 
 namespace Tetris
 {
-enum TetrominoType
-{
-  I,
-  O,
-  T,
-  J,
-  L,
-  S,
-  Z
-};
+  enum TetrominoType
+  {
+    I,
+    O,
+    T,
+    J,
+    L,
+    S,
+    Z
+  };
 
-enum BlockType
-{
-  NIL,
-  PVT,
-  BLK,
-};
+  enum BlockType
+  {
+    NIL,
+    PVT,
+    BLK,
+  };
 
-enum RotationType
-{
-  NO_ROTATE,
-  LEFT,
-  RIGHT
-};
+  enum RotationType
+  {
+    NO_ROTATE,
+    LEFT,
+    RIGHT
+  };
 
-class Tetromino
-{
+  class Tetromino
+  {
   private:
     std::vector<std::vector<std::vector<Tetris::BlockType>>> position;
 
@@ -50,15 +50,14 @@ class Tetromino
 
   public:
     Tetromino()
-      : position({}), wallKickData({}), currentRotation(0), x(0), y(0), color(ftxui::Color::Default),
-      tetrominoType(Tetris::TetrominoType::O){};
+        : position({}), wallKickData({}), currentRotation(0), x(0), y(0), color(ftxui::Color::Default),
+          tetrominoType(Tetris::TetrominoType::O) {};
 
     Tetromino(
-      std::vector<std::vector<std::vector<Tetris::BlockType>>> position,
-      std::vector<std::vector<std::pair<int, int>>>            wallKickData,
-      ftxui::Color                                             color,
-      Tetris::TetrominoType                                    TetrominoType
-    )
+        std::vector<std::vector<std::vector<Tetris::BlockType>>> position,
+        std::vector<std::vector<std::pair<int, int>>> wallKickData,
+        ftxui::Color color,
+        Tetris::TetrominoType TetrominoType)
     {
       this->wallKickData    = wallKickData;
       this->position        = position;
@@ -78,8 +77,7 @@ class Tetromino
       {
       case NO_ROTATE:
         return {
-          {0, 0}
-        };
+            {0, 0}};
       case LEFT:
         nextRotation = this->rotateLeft(this->currentRotation);
         break;
@@ -88,7 +86,7 @@ class Tetromino
         break;
       }
 
-      auto first  = this->wallKickData[this->currentRotation];
+      auto first = this->wallKickData[this->currentRotation];
       auto second = this->wallKickData[nextRotation];
 
       for (int i = 0; i < (int)first.size(); i++)
@@ -128,7 +126,7 @@ class Tetromino
     void reset(int width)
     {
       this->currentRotation = 0;
-      auto firstPosition    = this->getMatrix();
+      auto firstPosition = this->getMatrix();
 
       int minX = INT_MAX;
       int maxX = 0;
@@ -147,7 +145,7 @@ class Tetromino
           {
             maxX = j;
           }
-          
+
           if (firstPosition[i][j] != BlockType::NIL && minX > j)
           {
             minX = j;
@@ -158,5 +156,58 @@ class Tetromino
       this->x = (int)((width / 2) - 1 - minX - (this->tetrominoType != Tetris::TetrominoType::O ? 1 : 0));
       this->y = -minY;
     }
-};
+
+    void move(double x, double y, Tetris::RotationType rotation = Tetris::RotationType::NO_ROTATE)
+    {
+      this->x += x;
+      this->y += y;
+
+      this->rotate(rotation);
+    }
+
+    std::vector<std::vector<Tetris::BlockType>> getMatrix()
+    {
+      return this->position[this->currentRotation];
+    }
+
+    std::vector<std::vector<Tetris::BlockType>> getMatrix(int rotation)
+    {
+      return this->position[rotation];
+    }
+
+    ftxui::Color getColor()
+    {
+      return this->color;
+    }
+
+    int getRotation()
+    {
+      return this->currentRotation;
+    }
+
+    double getX()
+    {
+      return this->x;
+    }
+
+    double getY()
+    {
+      return this->y;
+    }
+
+    void setX(double x)
+    {
+      this->x = x;
+    }
+
+    void setY(double y)
+    {
+      this->y = y;
+    }
+
+    Tetris::TetrominoType getTetrominoType()
+    {
+      return this->tetrominoType;
+    }
+  };
 }
